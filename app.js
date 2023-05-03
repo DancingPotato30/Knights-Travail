@@ -40,7 +40,7 @@ STATIC APPROACH - Static graph, just new starting point for the search algorithm
 */
 //STATIC:
 
-const chessBoard = new Board([5, 4]);
+const chessBoard = new Board([1, 1]);
 const discoveredSquares = {};
 
 chessBoard.createRelation(chessBoard.root);
