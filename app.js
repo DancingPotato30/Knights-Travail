@@ -11,9 +11,14 @@ class Board {
     if (!square) return;
     let allMoves = getAllMoves(square.coords);
     allMoves.forEach((element) => {
-      square.connectedSquares.push(this.coordsToSquare(element));
+      if (!discoveredSquares.hasOwnProperty(`${element.toString()}`)) {
+        let neighbour = this.coordsToSquare(element);
+        square.connectedSquares.push(neighbour);
+        discoveredSquares[[element]] = neighbour;
+      } else {
+        square.connectedSquares.push(discoveredSquares[[element]]);
+      }
     });
-    console.log(square);
     square.connectedSquares.forEach((element) => {
       if (element.connectedSquares.length == 0) {
         this.createRelation(element);
@@ -36,6 +41,7 @@ STATIC APPROACH - Static graph, just new starting point for the search algorithm
 //STATIC:
 
 const chessBoard = new Board([5, 4]);
+const discoveredSquares = {};
 
 chessBoard.createRelation(chessBoard.root);
 
