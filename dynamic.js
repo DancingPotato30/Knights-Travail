@@ -13,44 +13,67 @@ class Tree {
 
 let path;
 const discoveredSquares = {};
-/*
-        const old = {};
-        const current = {};
-        const next = {};*/
 
-/*function knightMoves(start, end) {
-          let next = {};
-          let old = {};
-          let current = {};
-          current[[start]] = new Square(start);
-        
-          while (true) {
-            if (current.hasOwnProperty(`${end.toString()}`))
-              return "FOUND " + current[end].coords;
-            Object.keys(current).forEach((cell) => {
-              let nextCells = getAllMoves(current[cell].coords);
-              for (let i = 0; i < nextCells.length; i++) {
-                if (
-                  !old.hasOwnProperty(nextCells[i].toString()) &&
-                  !current.hasOwnProperty(nextCells[i].toString()) &&
-                  !next.hasOwnProperty(nextCells[i].toString())
-                ) {
-                  if (nextCells[i].coords) next[[nextCells[i].coords]] = nextCells[i];
-                }
-              }
-              old[[current[cell].coords]] = current[cell];
-            });
-            current = next;
-          }
-        }*/
+const old = {};
+const current = {};
+const next = {};
 
-function createTree(start, end) {
+function knightMoves(start, end) {
+  let next = {};
+  let old = {};
+  let current = {};
+  let root = new Square(start);
+  current[[start]] = root;
+  let counter = 0;
+
+  while (true) {
+    if (current.hasOwnProperty(`${end.toString()}`)) {
+      createTree(root);
+      return "FOUND " + current[end].coords + " in " + counter + " moves!";
+    }
+    Object.keys(current).forEach((cell) => {
+      let nextCells = getAllMoves(current[cell].coords);
+      current[cell].legalMoves = nextCells;
+      for (let i = 0; i < nextCells.length; i++) {
+        if (
+          !old.hasOwnProperty(nextCells[i].toString()) &&
+          !current.hasOwnProperty(nextCells[i].toString()) &&
+          !next.hasOwnProperty(nextCells[i].toString())
+        ) {
+          if (nextCells[i].coords) next[[nextCells[i].coords]] = nextCells[i];
+        }
+      }
+      old[[current[cell].coords]] = current[cell];
+    });
+    current = next;
+    counter++;
+  }
+}
+
+function createTree(root) {
+  const path = new Tree(root);
+  bfs(root);
+}
+
+function bfs(root) {
+  let queue = [];
+  queue.push(root);
+  while (queue.length > 0) {
+    let node = queue.shift();
+    //console.log(node.coords);
+    for (let i = 0; i < node.legalMoves.length; i++) {
+      queue.push(node.legalMoves[i]);
+    }
+  }
+}
+
+/*function createTree(start, end) {
   let root = coordsToNode(start);
   path = new Tree(root);
   return knightMoves(root, end);
-}
+}*/
 
-function knightMoves(start, end) {
+/*function knightMoves(start, end) {
   let current;
   if (
     Array.isArray(start) &&
@@ -70,19 +93,26 @@ function knightMoves(start, end) {
   discoveredSquares[[current.coords]] = current;
 
   current.legalMoves.forEach((node) => {
-    /*if (node.legalMoves.length == 0) {
+    //if (node.legalMoves.length == 0) {
             console.log(node.coords);
             return knightMoves(node, end);
-          }*/
-    if (discoveredSquares.hasOwnProperty[node.toString()]) {
-      console.log(node);
+       //   }
+    if (discoveredSquares.hasOwnProperty[node.coords.toString()]) {
+      console.log(node.coords.toString());
       console.log(discoveredSquares.hasOwnProperty(node.coords.toString()));
       return knightMoves(node, end);
+    } else {
+      console.log("hey");
+      console.log(discoveredSquares.hasOwnProperty(node.coords.toString()));
     }
   });
 }
+*/
 
-console.log(createTree([1, 1], [4, 3]));
+//discoveredSquares not working well..
+
+//console.log(createTree([1, 1], [4, 3]));
+console.log(knightMoves([1, 1], [4, 3]));
 
 function coordsToNode(coords) {
   return new Square(coords);
