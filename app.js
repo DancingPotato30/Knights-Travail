@@ -1,4 +1,10 @@
-class Board {
+/*
+DYNAMIC APPROACH - New root is provided every function call, constructing a new graph.
+STATIC APPROACH - Static graph, just new starting point for the search algorithm everytime.
+*/
+//STATIC:
+
+/*class Board {
   constructor(root) {
     this.root = this.coordsToSquare(root);
   }
@@ -34,24 +40,26 @@ class Square {
   }
 }
 
-/*
-DYNAMIC APPROACH - New root is provided every function call, constructing a new graph.
-STATIC APPROACH - Static graph, just new starting point for the search algorithm everytime.
-*/
-//STATIC:
-
 const chessBoard = new Board([1, 1]);
 const discoveredSquares = {};
 
 chessBoard.createRelation(chessBoard.root);
 
-console.log(chessBoard);
+//console.log(chessBoard);
+
+knightMoves([1, 1], [7, 3]);
 
 //A function to generate the rest of the nodes using the relation between start point and move point being an array of [x, y] where x and y can be either 1, 2, -1, -2
+
+function knightMoves(start, end) {
+  start = discoveredSquares[[start]];
+  end = discoveredSquares[[end]];
+}
 
 function getAllMoves(start) {
   let moves = [];
 
+  //I did the maths and no matter where you are, these are all the possible displacements when moving a knight in chess
   moves.push(addArrayItems(start, [1, 2]));
   moves.push(addArrayItems(start, [1, -2]));
   moves.push(addArrayItems(start, [-1, 2]));
@@ -71,8 +79,9 @@ function addArrayItems(array1, array2) {
   let firstNum = array1[0] + array2[0];
   let secondNum = array1[1] + array2[1];
 
+  //Just checks it doesnt get out of the board
   if (firstNum > 0 && firstNum < 9) newArray.push(firstNum);
   if (secondNum > 0 && secondNum < 9) newArray.push(secondNum);
   if (newArray.length < 2) return null;
   return newArray;
-}
+}*/
