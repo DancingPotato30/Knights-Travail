@@ -2,6 +2,7 @@ class Square {
   constructor(coords) {
     this.coords = coords;
     this.legalMoves = [];
+    this.parent = null;
   }
 }
 
@@ -19,20 +20,30 @@ const current = {};
 const next = {};
 
 function knightMoves(start, end) {
+  if (end[0] > 8 || end[0] < 1 || end[1] < 1 || end[1] > 8)
+    return "INVALID INPUT";
   let next = {};
   let old = {};
   let current = {};
   let root = new Square(start);
   current[[start]] = root;
   let counter = 0;
+  let nextCells;
+  let parent;
 
   while (true) {
     if (current.hasOwnProperty(`${end.toString()}`)) {
       createTree(root);
-      return "FOUND " + current[end].coords + " in " + counter + " moves!";
+      console.log(`Found it in ${counter} moves! Your full path: `);
+      getPath(end, old, counter);
+      return end.toString();
     }
+    parent = current;
     Object.keys(current).forEach((cell) => {
-      let nextCells = getAllMoves(current[cell].coords);
+      nextCells = getAllMoves(current[cell].coords);
+      for (let i = 0; i < nextCells.length; i++) {
+        nextCells[i].parent = current[cell];
+      }
       current[cell].legalMoves = nextCells;
       for (let i = 0; i < nextCells.length; i++) {
         if (
@@ -46,12 +57,25 @@ function knightMoves(start, end) {
       old[[current[cell].coords]] = current[cell];
     });
     current = next;
+    next = {};
     counter++;
   }
 }
 
+function getPath(end, old, counter) {
+  let fullPath = [];
+  let root = searchTree(path.root, end);
+  for (let i = 0; i < counter; i++) {
+    root = root.parent;
+    fullPath.push(root.coords.toString());
+  }
+  for (let i = fullPath.length - 1; i >= 0; i--) {
+    console.log(fullPath[i]);
+  }
+}
+
 function createTree(root) {
-  const path = new Tree(root);
+  path = new Tree(root);
   bfs(root);
 }
 
@@ -60,67 +84,21 @@ function bfs(root) {
   queue.push(root);
   while (queue.length > 0) {
     let node = queue.shift();
-    //console.log(node.coords);
     for (let i = 0; i < node.legalMoves.length; i++) {
       queue.push(node.legalMoves[i]);
     }
   }
 }
 
-/*function createTree(start, end) {
-  let root = coordsToNode(start);
-  path = new Tree(root);
-  return knightMoves(root, end);
-}*/
-
-/*function knightMoves(start, end) {
-  let current;
-  if (
-    Array.isArray(start) &&
-    !discoveredSquares.hasOwnProperty(start.toString())
-  ) {
-    console.log("Not in discovered");
-    current = new Square(start);
-  } else {
-    current = start;
-  }
-
-  for (let i = 0; i < current.legalMoves.length; i++) {
-    if (current.legalMoves[i].coords == end) return "a";
-  }
-
-  current.legalMoves = getAllMoves(current.coords);
-  discoveredSquares[[current.coords]] = current;
-
-  current.legalMoves.forEach((node) => {
-    //if (node.legalMoves.length == 0) {
-            console.log(node.coords);
-            return knightMoves(node, end);
-       //   }
-    if (discoveredSquares.hasOwnProperty[node.coords.toString()]) {
-      console.log(node.coords.toString());
-      console.log(discoveredSquares.hasOwnProperty(node.coords.toString()));
-      return knightMoves(node, end);
-    } else {
-      console.log("hey");
-      console.log(discoveredSquares.hasOwnProperty(node.coords.toString()));
-    }
-  });
-}
-*/
-
-//discoveredSquares not working well..
-
-//console.log(createTree([1, 1], [4, 3]));
-console.log(knightMoves([1, 1], [4, 3]));
+console.log(knightMoves([5, 3], [2, 2]));
 
 function coordsToNode(coords) {
   return new Square(coords);
 }
 
-function searchTree(element, matchingCoords) {
+function searchTree(element = path.root, matchingCoords) {
   if (element.coords.toString() === matchingCoords.toString()) {
-    return true;
+    return element;
   } else if (element.legalMoves != null) {
     let result = null;
     for (let i = 0; result == null && i < element.legalMoves.length; i++) {
@@ -150,7 +128,6 @@ function getAllMoves(start) {
 }
 
 function addArrayItems(array1, array2) {
-  //console.log(array1);
   const newArray = [];
   let firstNum = array1[0] + array2[0];
   let secondNum = array1[1] + array2[1];
